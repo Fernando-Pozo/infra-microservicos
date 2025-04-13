@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  orquestrador:
+    build:
+      context: https://github.com/Fernando-Pozo/orquestracao.git#main:demo
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - processador-pagamento
+    networks:
+      - localnet
+    environment:
+      - LOCALSTACK_HOST=localstack
+
+  processador-pagamento:
+    build:
+      context: https://github.com/Fernando-Pozo/MeiosPagamento.git#main:demo
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    networks:
+      - localnet
+
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=dynamodb
+      - DEBUG=1
+    networks:
+      - localnet
+
+networks:
+  localnet:
